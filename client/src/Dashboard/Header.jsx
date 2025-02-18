@@ -72,18 +72,6 @@ function Header({ toggleSidebar, title, isAuthenticated }) {
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
-        if (error.response && error.response.status === 401) {
-          Swal.fire({
-            icon: "error",
-            title: "Session Expired",
-            confirmButtonColor: "#1e88e5",
-            showCloseButton: true,
-            confirmButtonText: "Go to login page",
-            html: "Session Expired, You will be redirected to the Login page <br>Thank you!",
-          }).then(() => {
-            logout();
-          });
-        }
       } finally {
         setDataLoading(false);
       }

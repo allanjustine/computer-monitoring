@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../api/axios";
 import Cookies from "js-cookie";
+import Swal from "sweetalert2";
 
 export const AuthContext = createContext();
 
@@ -49,9 +50,18 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error("Failed to fetch user profile", error);
-        if (error.response.status === 401) {
-          setIsAuthenticated(false);
-          logout();
+        if (error.response && error.response.status === 401) {
+          Swal.fire({
+            icon: "error",
+            title: "Session Expired",
+            confirmButtonColor: "#1e88e5",
+            showCloseButton: true,
+            confirmButtonText: "Go to login page",
+            html: "Session Expired, You will be redirected to the Login page <br>Thank you!",
+          }).then(() => {
+            logout();
+            setIsAuthenticated(false);
+          });
         }
       } finally {
         setLoading(false);

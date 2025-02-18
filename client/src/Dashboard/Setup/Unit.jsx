@@ -23,6 +23,7 @@ import {
   Typography,
   Breadcrumbs,
   Tooltip,
+  TextField,
 } from "@mui/material";
 import { makeStyles } from "@material-ui/core";
 import DatePicker from "react-datepicker";
@@ -53,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CustomTableB = (refresh) => {
+const CustomTableB = ({ refresh, searchTermData }) => {
   const classes = useStyles();
   const [unit, setUnit] = useState({ vacantDefective: [] });
   const [loading, setLoading] = useState(true);
@@ -275,10 +276,7 @@ const CustomTableB = (refresh) => {
     try {
       const formattedValues = formatEditValues(editValues);
 
-      const response = await api.post(
-        `update-unit/${id}`,
-        formattedValues
-      );
+      const response = await api.post(`update-unit/${id}`, formattedValues);
 
       if (response.data.status === true) {
         const Toast = Swal.mixin({
@@ -334,6 +332,31 @@ const CustomTableB = (refresh) => {
   const handleCancelEdit = () => {
     setEditUnitId(null);
   };
+
+  const filteredData = unit?.vacantDefective
+    ? unit?.vacantDefective.filter(
+        (unit) =>
+          unit?.unit_code
+            ?.toLowerCase()
+            .includes(searchTermData.toLowerCase()) ||
+          unit?.date_of_purchase
+            ?.toLowerCase()
+            .includes(searchTermData.toLowerCase()) ||
+          unit?.category.category_name
+            ?.toLowerCase()
+            .includes(searchTermData.toLowerCase()) ||
+          unit?.description
+            ?.toLowerCase()
+            .includes(searchTermData.toLowerCase()) ||
+          unit?.supplier?.supplier_name
+            ?.toLowerCase()
+            .includes(searchTermData.toLowerCase()) ||
+          unit?.serial_number
+            ?.toLowerCase()
+            .includes(searchTermData.toLowerCase()) ||
+          unit?.status?.toLowerCase().includes(searchTermData.toLowerCase())
+      )
+    : [];
 
   return (
     <div
@@ -446,8 +469,8 @@ const CustomTableB = (refresh) => {
                   ))}
                 </TableCell>
               </TableRow>
-            ) : unit?.vacantDefective && unit?.vacantDefective.length > 0 ? (
-              unit?.vacantDefective
+            ) : filteredData && filteredData.length > 0 ? (
+              filteredData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((data, index) => (
                   <TableRow key={data.id}>
@@ -806,7 +829,7 @@ const CustomTableB = (refresh) => {
             ) : (
               <TableRow>
                 <TableCell colSpan={9} align="center">
-                  No vacant/defective units found
+                  {searchTermData ? `No results found for "${searchTermData}"` : "No vacant/defective units found"}
                 </TableCell>
               </TableRow>
             )}
@@ -815,11 +838,7 @@ const CustomTableB = (refresh) => {
         <TablePagination
           rowsPerPageOptions={[5, 15, 20, 25]}
           component="div"
-          count={
-            Array.isArray(unit?.vacantDefective)
-              ? unit.vacantDefective.length
-              : 0
-          }
+          count={Array.isArray(filteredData) ? filteredData.length : 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -924,12 +943,7 @@ const SearchableDropdown = ({
   );
 };
 
-const CustomTableA = ({
-  rows,
-  setRows,
-  onSubmit,
-  toggleModal,
-}) => {
+const CustomTableA = ({ rows, setRows, onSubmit, toggleModal }) => {
   const classes = useStyles();
   const [category, setCategory] = useState({ data: [] });
   const [supplier, setSupplier] = useState({ data: [] });
@@ -1374,7 +1388,6 @@ const CustomTableA = ({
 };
 
 function Unit() {
-
   const [rows, setRows] = useState([
     {
       date_of_purchase: "",
@@ -1387,9 +1400,16 @@ function Unit() {
   ]);
   const [refresh, setRefresh] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const toggleModal = () => {
     setIsOpenModal(!isOpenModal);
+  };
+
+  const handleSearchTerm = (e) => {
+    const value = e.target.value;
+
+    setSearchTerm(value);
   };
 
   return (
@@ -1443,16 +1463,28 @@ function Unit() {
         </div>
       )}
       <div className="relative">
-        <button
-          onClick={toggleModal}
-          className="absolute flex items-center px-6 py-3 space-x-2 font-semibold text-white transition duration-300 ease-in-out bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 right-5"
-        >
-          <FontAwesomeIcon icon={faPlus} />
-          <span>Add Unit</span>
-        </button>
+        <div className="flex justify-between px-4">
+          <TextField
+            size="small"
+            label="Search..."
+            variant="outlined"
+            onChange={handleSearchTerm}
+          />
+          <button
+            onClick={toggleModal}
+            className="flex items-center px-6 py-3 space-x-2 font-semibold text-white transition duration-300 ease-in-out bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 right-5"
+          >
+            <FontAwesomeIcon icon={faPlus} />
+            <span>Add Unit</span>
+          </button>
+        </div>
 
-        <div className="mt-12 px-4 py-6 rounded-lg max-h-[45rem] overflow-auto">
-          <CustomTableB rows={rows} refresh={refresh} />
+        <div className="px-4 py-6 rounded-lg max-h-[45rem] overflow-auto">
+          <CustomTableB
+            rows={rows}
+            refresh={refresh}
+            searchTermData={searchTerm}
+          />
         </div>
       </div>
     </>
