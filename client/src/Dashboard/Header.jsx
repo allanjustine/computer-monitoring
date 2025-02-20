@@ -78,7 +78,7 @@ function Header({ toggleSidebar, title, isAuthenticated, toogleSideBarIcon }) {
     };
 
     fetchNotifications();
-  }, [logout]);
+  }, [logout, loading]);
 
   useEffect(() => {
     if (notifCount > 0) {
