@@ -829,7 +829,9 @@ const CustomTableB = ({ refresh, searchTermData }) => {
             ) : (
               <TableRow>
                 <TableCell colSpan={9} align="center">
-                  {searchTermData ? `No results found for "${searchTermData}"` : "No vacant/defective units found"}
+                  {searchTermData
+                    ? `No results found for "${searchTermData}"`
+                    : "No vacant/defective units found"}
                 </TableCell>
               </TableRow>
             )}
@@ -1408,7 +1410,6 @@ function Unit() {
 
   const handleSearchTerm = (e) => {
     const value = e.target.value;
-
     setSearchTerm(value);
   };
 

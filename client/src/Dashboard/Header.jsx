@@ -24,7 +24,7 @@ import { useAuth } from "../context/AuthContext";
 import Cookies from "js-cookie";
 import StorageUtils from "../utils/StorageUtils";
 
-function Header({ toggleSidebar, title, isAuthenticated }) {
+function Header({ toggleSidebar, title, isAuthenticated, toogleSideBarIcon }) {
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
   const [notification, setNotification] = useState([]);
@@ -241,8 +241,16 @@ function Header({ toggleSidebar, title, isAuthenticated }) {
     <div className={isAuthenticated ? "sticky top-0 z-50 w-full" : "hidden"}>
       <div className="flex items-center justify-between w-full h-20 pr-10 bg-blue-800">
         <button
+          type="button"
           onClick={toggleSidebar}
           className="ml-4 text-white cursor-pointer md:hidden"
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <button
+          type="button"
+          onClick={toogleSideBarIcon}
+          className="hidden md:block ml-4 text-white cursor-pointer"
         >
           <FontAwesomeIcon icon={faBars} />
         </button>
@@ -303,7 +311,10 @@ function Header({ toggleSidebar, title, isAuthenticated }) {
               aria-haspopup="true"
               aria-expanded={openProfileMenu ? "true" : undefined}
             >
-              <Avatar alt={user.firstName} src={StorageUtils(user?.profile_picture)} />
+              <Avatar
+                alt={user.firstName}
+                src={StorageUtils(user?.profile_picture)}
+              />
             </IconButton>
           </Tooltip>
         </div>

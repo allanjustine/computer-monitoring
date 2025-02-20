@@ -14,7 +14,7 @@ class ComputerUserController extends Controller
 {
     public function index()
     {
-        $allComputerUsers = ComputerUser::query()->with('branchCode', 'position', 'computers', 'computers.units.category', 'computers.units.supplier')->orderBy('id', 'asc')->paginate(5);
+        $allComputerUsers = ComputerUser::query()->with('branchCode', 'position', 'computers', 'computers.units.category', 'computers.units.supplier')->orderBy('id', 'asc')->get();
         $computerSetUsers = ComputerUser::query()->with('computers', 'computers.units.category', 'computers.units.supplier')->orderBy('id', 'asc')->whereHas('computers')->get();
 
 

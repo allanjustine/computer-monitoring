@@ -51,7 +51,7 @@ export const TableComponent = () => {
     const fetchComputerUser = async () => {
       try {
         const response = await api.get("/computer-users");
-        const data = response.data.data.data;
+        const data = response.data.data;
         const userData = data.map((user) => ({
           ...user,
           action: ["Specs", "View", "Qr"],
